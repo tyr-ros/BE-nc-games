@@ -3,6 +3,7 @@ const app = require('../app.js')
 const seed = require('../db/seeds/seed.js')
 const db = require('../db/connection.js')
 const testData = require('../db/data/test-data/index.js')
+const { json } = require('express')
 
 
 beforeEach(() => {
@@ -38,5 +39,26 @@ describe('GET: /api/categories', () => {
             .get('/api/cattegories')
             .expect(404)
 
+    })
+})
+
+describe('GET: /api', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api')
+            .expect(200)
+    })
+    it('gives an object detailing the endpoints available', () => {
+        return request(app)
+            .get('/api')
+            .then((res) => {
+                const body = res.body.endpoints
+                expect(body).toBeInstanceOf(Object)
+                for (const prop in body) {
+                    expect(body[prop]).toHaveProperty('description');
+                    expect(body[prop]).toHaveProperty('queries'); expect(body[prop]).toHaveProperty('exampleResponse');
+                }
+
+            })
     })
 })
