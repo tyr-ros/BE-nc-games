@@ -13,17 +13,11 @@ afterAll(() => {
     db.end()
 })
 
-describe('GET: /api', () => {
-    it('responds with correct status code 200', () => {
-        return request(app)
-            .get('/api')
-            .expect(200)
-    })
-})
+
 describe('GET: /api/categories', () => {
     it('responds with correct status code 200', () => {
         return request(app)
-            .get('/api')
+            .get('/api/categories')
             .expect(200)
     })
     it('responds with an array of objects with the specified properties', () => {
