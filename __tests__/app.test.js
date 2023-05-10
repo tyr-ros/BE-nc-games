@@ -3,7 +3,7 @@ const app = require('../app.js')
 const seed = require('../db/seeds/seed.js')
 const db = require('../db/connection.js')
 const testData = require('../db/data/test-data/index.js')
-const { json } = require('express')
+
 
 
 beforeEach(() => {
@@ -54,9 +54,9 @@ describe('GET: /api', () => {
             .then((res) => {
                 const body = res.body.endpoints
                 expect(body).toBeInstanceOf(Object)
-                for (const prop in body) {
-                    expect(body[prop]).toHaveProperty('description');
-                    expect(body[prop]).toHaveProperty('queries'); expect(body[prop]).toHaveProperty('exampleResponse');
+                for (const key in body) {
+                    expect(body[key]).toHaveProperty('description');
+                    expect(body[key]).toHaveProperty('queries'); expect(body[key]).toHaveProperty('exampleResponse');
                 }
 
             })
