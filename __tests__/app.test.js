@@ -5,6 +5,7 @@ const db = require('../db/connection.js')
 const testData = require('../db/data/test-data/index.js')
 
 
+
 beforeEach(() => {
     return seed(testData)
 })
@@ -38,5 +39,26 @@ describe('GET: /api/categories', () => {
             .get('/api/cattegories')
             .expect(404)
 
+    })
+})
+
+describe('GET: /api', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api')
+            .expect(200)
+    })
+    it('gives an object detailing the endpoints available', () => {
+        return request(app)
+            .get('/api')
+            .then((res) => {
+                const body = res.body.endpoints
+                expect(body).toBeInstanceOf(Object)
+                for (const key in body) {
+                    expect(body[key]).toHaveProperty('description');
+                    expect(body[key]).toHaveProperty('queries'); expect(body[key]).toHaveProperty('exampleResponse');
+                }
+
+            })
     })
 })
