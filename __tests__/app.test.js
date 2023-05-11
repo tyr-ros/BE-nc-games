@@ -102,5 +102,15 @@ describe('GET: /api/reviews/:review_id', () => {
 
                 })
         })
+        it("returns a 404 if given an invalid id", () => {
+            return request(app)
+                .get('/api/reviews/cat')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
     })
 })

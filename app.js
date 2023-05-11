@@ -11,7 +11,7 @@ app.get('/api/categories', getAllCategories)
 app.get('/api/reviews/:review_id', getReviewById)
 
 app.use((err, req, res, next) => {
-    res.status(err.status).send({ msg: 'Bad request' })
+    res.status(404).send({ msg: 'Bad request' })
 })
 
 
