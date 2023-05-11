@@ -114,3 +114,67 @@ describe('GET: /api/reviews/:review_id', () => {
         })
     })
 })
+
+describe('GET: /api/reviews', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+    })
+    it('gives an array of objects with the following properties', () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body).toBeInstanceOf(Array)
+                const reviewsProperties = {
+                    owner: expect.any(String),
+                    title: expect.any(String),
+                    designer: expect.any(String),
+                    review_img_url: expect.any(String),
+                    votes: expect.any(Number),
+                    category: expect.any(String),
+                    created_at: expect.any(String),
+                    review_id: expect.any(Number),
+                    comment_count: expect.any(Number)
+                };
+                expect(body[0]).toMatchObject(reviewsProperties);
+
+
+            })
+    })
+    it('does not return review_body property', () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body[0]).not.toHaveProperty("review_body");
+
+
+            })
+    })
+    it("returns reviews sorted descendingly", () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body[0].designer).toEqual('Avery Wunzboogerz')
+                expect(body[3].designer).toEqual('Asger Harding Granerud')
+                expect(body[7].designer).toEqual('Fiona Lohoar')
+            })
+    })
+
+
+
+
+    it("returns a 404 if given a bad route", () => {
+        return request(app)
+            .get('/api/reviewssss')
+            .expect(404)
+        
+    })
+
+})
