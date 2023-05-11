@@ -62,3 +62,55 @@ describe('GET: /api', () => {
             })
     })
 })
+
+describe('GET: /api/reviews/:review_id', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api/reviews/1')
+            .expect(200)
+    })
+    it('gives an object with the following properties', () => {
+        return request(app)
+            .get('/api/reviews/1')
+            .then((res) => {
+                const body = res.body.review
+                expect(body).toBeInstanceOf(Object)
+                const reviewProperties = {
+                    review_id: expect.any(Number),
+                    title: expect.any(String),
+                    review_body: expect.any(String),
+                    designer: expect.any(String),
+                    review_img_url: expect.any(String),
+                    votes: expect.any(Number),
+                    category: expect.any(String),
+                    owner: expect.any(String),
+                    created_at: expect.any(String)
+                };
+                expect(body).toMatchObject(reviewProperties);
+
+
+            })
+    })
+    describe("errors for review api", () => {
+        it("returns a 404 if there is no review with the id", () => {
+            return request(app)
+                .get('/api/reviews/1099')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+        it("returns a 404 if given an invalid id", () => {
+            return request(app)
+                .get('/api/reviews/cat')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+    })
+})
