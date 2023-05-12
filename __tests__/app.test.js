@@ -195,9 +195,10 @@ describe('GET: /api/reviews/:review_id/comments', () => {
         return request(app)
             .get('/api/reviews/1/comments')
             .expect(200)
-            .then(( res ) => {
+            .then((res) => {
                 const body = res.body.comments
-                expect(body).toBeInstanceOf(Array)
+                const emptyArray = []
+                expect(body).toEqual(emptyArray)
 
             })
     })
