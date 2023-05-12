@@ -12,8 +12,12 @@ app.get('/api/reviews/:review_id', getReviewById)
 
 app.get('/api/reviews', getReviews)
 
+app.use((req, res, next) => {
+    res.status(404).send({ msg: 'Not found' });
+});
+
 app.use((err, req, res, next) => {
-    res.status(404).send({ msg: 'Bad request' })
+    res.status(404).send({ msg: 'Not found' })
 })
 
 

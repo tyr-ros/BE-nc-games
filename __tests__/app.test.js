@@ -97,7 +97,7 @@ describe('GET: /api/reviews/:review_id', () => {
                 .get('/api/reviews/1099')
                 .expect(404)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Bad request')
+                    expect(body.msg).toBe('Not found')
 
 
                 })
@@ -107,7 +107,7 @@ describe('GET: /api/reviews/:review_id', () => {
                 .get('/api/reviews/cat')
                 .expect(404)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Bad request')
+                    expect(body.msg).toBe('Not found')
 
 
                 })
@@ -161,9 +161,9 @@ describe('GET: /api/reviews', () => {
             .expect(200)
             .then((res) => {
                 const body = res.body.reviews
-                expect(body[0].designer).toEqual('Avery Wunzboogerz')
-                expect(body[3].designer).toEqual('Asger Harding Granerud')
-                expect(body[7].designer).toEqual('Fiona Lohoar')
+                expect(body).toBeSortedBy('created_at', {
+                    descending: true,
+                });
             })
     })
 
@@ -172,9 +172,13 @@ describe('GET: /api/reviews', () => {
 
     it("returns a 404 if given a bad route", () => {
         return request(app)
-            .get('/api/reviewssss')
+            .get('/api/reviewss')
             .expect(404)
-        
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+
+
+            })
     })
 
 })
