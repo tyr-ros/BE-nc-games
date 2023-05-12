@@ -97,7 +97,7 @@ describe('GET: /api/reviews/:review_id', () => {
                 .get('/api/reviews/1099')
                 .expect(404)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Bad request')
+                    expect(body.msg).toBe('Not found')
 
 
                 })
@@ -107,10 +107,80 @@ describe('GET: /api/reviews/:review_id', () => {
                 .get('/api/reviews/cat')
                 .expect(404)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Bad request')
+                    expect(body.msg).toBe('Not found')
 
 
                 })
         })
     })
+})
+
+describe('GET: /api/reviews', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+    })
+    it('gives an array of objects with the following properties', () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body).toBeInstanceOf(Array)
+                const reviewsProperties = {
+                    owner: expect.any(String),
+                    title: expect.any(String),
+                    designer: expect.any(String),
+                    review_img_url: expect.any(String),
+                    votes: expect.any(Number),
+                    category: expect.any(String),
+                    created_at: expect.any(String),
+                    review_id: expect.any(Number),
+                    comment_count: expect.any(Number)
+                };
+                body.forEach(review => {
+                    expect(review).toMatchObject(reviewsProperties);
+                });
+
+
+            })
+    })
+    it('does not return review_body property', () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body[0]).not.toHaveProperty("review_body");
+
+
+            })
+    })
+    it("returns reviews sorted descendingly", () => {
+        return request(app)
+            .get('/api/reviews')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body).toBeSortedBy('created_at', {
+                    descending: true,
+                });
+            })
+    })
+
+
+
+
+    it("returns a 404 if given a bad route", () => {
+        return request(app)
+            .get('/api/reviewss')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+
+
+            })
+    })
+
 })
