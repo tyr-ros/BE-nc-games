@@ -105,9 +105,9 @@ describe('GET: /api/reviews/:review_id', () => {
         it("returns a 404 if given an invalid id", () => {
             return request(app)
                 .get('/api/reviews/cat')
-                .expect(404)
+                .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Not found')
+                    expect(body.msg).toBe('Bad request')
 
 
                 })
@@ -183,4 +183,64 @@ describe('GET: /api/reviews', () => {
             })
     })
 
+})
+
+describe('GET: /api/reviews/:review_id/comments', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api/reviews/2/comments')
+            .expect(200)
+    })
+    it('responds with status code 200 and a blank array if given a valid id with no reviews', () => {
+        return request(app)
+            .get('/api/reviews/1/comments')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.comments
+                const emptyArray = []
+                expect(body).toEqual(emptyArray)
+
+            })
+    })
+    it('gives an array of objects with the following properties', () => {
+        return request(app)
+            .get('/api/reviews/2/comments')
+            .then((res) => {
+                const body = res.body.comments
+                expect(body).toBeInstanceOf(Object)
+                const commentProperties = {
+                    comment_id: expect.any(Number),
+                    review_id: expect.any(Number),
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author: expect.any(String),
+                    created_at: expect.any(String)
+                };
+                body.forEach(comment => {
+                    expect(comment).toMatchObject(commentProperties);
+                });
+            })
+    })
+    describe("errors for comments api", () => {
+        it("returns 404 if there is no review_id", () => {
+            return request(app)
+                .get('/api/reviews/1099/comments')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Not found')
+
+
+                })
+        })
+        it("returns a 400 if given an invalid id", () => {
+            return request(app)
+                .get('/api/reviews/cat/comments')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+    })
 })
