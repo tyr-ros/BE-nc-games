@@ -20,8 +20,17 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    res.status(404).send({ msg: 'Not found' })
-})
+    if (err.status === 404) {
+        res.status(404).send({ msg: 'Not found' });
+    } else if (err.code === '22P02') {
+        res.status(400).send({ msg: 'Bad request' });
+    } else if (err.status === 400) {
+        res.status(400).send({ msg: 'Bad request' });
+    } else {
+        res.status(500).send({ msg: 'Internal server error' });
+    }
+});
+
 
 
 

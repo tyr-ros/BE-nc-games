@@ -105,9 +105,9 @@ describe('GET: /api/reviews/:review_id', () => {
         it("returns a 404 if given an invalid id", () => {
             return request(app)
                 .get('/api/reviews/cat')
-                .expect(404)
+                .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Not found')
+                    expect(body.msg).toBe('Bad request')
 
 
                 })
@@ -191,6 +191,16 @@ describe('GET: /api/reviews/:review_id/comments', () => {
             .get('/api/reviews/2/comments')
             .expect(200)
     })
+    it('responds with status code 200 and a blank array if given a valid id with no reviews', () => {
+        return request(app)
+            .get('/api/reviews/1/comments')
+            .expect(200)
+            .then(( res ) => {
+                const body = res.body.comments
+                expect(body).toBeInstanceOf(Array)
+
+            })
+    })
     it('gives an array of objects with the following properties', () => {
         return request(app)
             .get('/api/reviews/2/comments')
@@ -211,7 +221,7 @@ describe('GET: /api/reviews/:review_id/comments', () => {
             })
     })
     describe("errors for comments api", () => {
-        it("returns a 404 if there is no review_id with comments", () => {
+        it("returns 404 if there is no review_id", () => {
             return request(app)
                 .get('/api/reviews/1099/comments')
                 .expect(404)
@@ -221,12 +231,12 @@ describe('GET: /api/reviews/:review_id/comments', () => {
 
                 })
         })
-        it("returns a 404 if given an invalid id", () => {
+        it("returns a 400 if given an invalid id", () => {
             return request(app)
                 .get('/api/reviews/cat/comments')
-                .expect(404)
+                .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Not found')
+                    expect(body.msg).toBe('Bad request')
 
 
                 })
