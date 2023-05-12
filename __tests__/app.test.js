@@ -139,7 +139,9 @@ describe('GET: /api/reviews', () => {
                     review_id: expect.any(Number),
                     comment_count: expect.any(Number)
                 };
-                expect(body[0]).toMatchObject(reviewsProperties);
+                body.forEach(review => {
+                    expect(review).toMatchObject(reviewsProperties);
+                });
 
 
             })
