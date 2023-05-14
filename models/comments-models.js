@@ -1,8 +1,8 @@
 const db = require('../db/connection')
-const { checkReviewExists } = require("../db/seeds/utils.js");
+const { checkReviewIdExists } = require("../db/seeds/utils.js");
 
 exports.fetchCommentsByReviewId = (review_id) => {
-  return checkReviewExists(review_id)
+  return checkReviewIdExists(review_id)
     .then(() => {
       return db.query(
         `
@@ -16,4 +16,18 @@ exports.fetchCommentsByReviewId = (review_id) => {
     });
 };
 
-// exports.makeNewComment
+exports.insertCommentByReviewId = (comment, review_id) => {
+  const { username, body } = comment
+  const queryStr =
+    "INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *;"
+  const queryVals = [username, body, review_id]
+
+  return checkReviewIdExists(review_id)
+    .then(() => {
+      return db.query(queryStr, queryVals)
+    })
+    .then((res) => {
+
+      return res.rows[0]
+    })
+}

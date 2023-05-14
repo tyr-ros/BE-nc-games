@@ -244,3 +244,108 @@ describe('GET: /api/reviews/:review_id/comments', () => {
         })
     })
 })
+
+describe('POST: /api/reviews/:review_id/comments', () => {
+    it('responds with correct status code 201', () => {
+        const newComment = {
+            username: 'mallionaire',
+            body: 'On the other hand, my turtle hated this game'
+        };
+        return request(app)
+            .post('/api/reviews/2/comments')
+            .send(
+                newComment
+            )
+            .expect(201)
+            .then((res) => {
+                const comment = res.body.comment
+                expect(comment).toEqual({
+                    body: 'On the other hand, my turtle hated this game',
+                    votes: 0,
+                    author: 'mallionaire',
+                    review_id: 2,
+                    created_at: expect.any(String),
+                    comment_id: 7
+                })
+            })
+    })
+
+    it('gives an object with the following properties', () => {
+        const newComment = {
+            username: 'mallionaire',
+            body: 'On the other hand, my turtle hated this game'
+        }
+        return request(app)
+        
+            .post('/api/reviews/2/comments')
+            .send(newComment)
+            .then((res) => {const body = res.body.comment
+                
+                expect(body).toBeInstanceOf(Object)
+                const commentProperties = {
+                    comment_id: expect.any(Number),
+                    review_id: expect.any(Number),
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author: expect.any(String),
+                    created_at: expect.any(String)
+                }
+                
+                    expect(body).toMatchObject(commentProperties);
+                
+                
+            })
+    })
+    describe("errors for posting comments api", () => {
+        it("returns 404 if there is no review_id", () => {
+            return request(app)
+                .post('/api/reviews/1099/comments')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Not found')
+
+
+                })
+        })
+        it("returns a 400 if given an invalid id", () => {
+            return request(app)
+                .post('/api/reviews/cat/comments')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+        it("returns a 400 if given malformed data ", () => {
+            const malformedData = {
+                body: 'Wrong',
+            }
+            return request(app)
+                .post('/api/reviews/cat/comments')
+                .send(malformedData)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+        it("returns a 400 if given incorrect data types ", () => {
+            const wrongTypes = {
+                body: 7,
+                username: 0
+            }
+            return request(app)
+                .post('/api/reviews/cat/comments')
+                .send(wrongTypes)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+
+    })
+})
