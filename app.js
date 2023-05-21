@@ -3,6 +3,7 @@ const { getAllCategories } = require('./controllers/categories-controllers')
 const { getEndpoints } = require('./controllers/api.controller')
 const { getReviewById, getReviews, setVotes } = require('./controllers/reviews.controller')
 const { getCommentsByReviewId, postCommentByReviewId, removeCommentByCommentId } = require('./controllers/comments-controllers.js')
+const { getUsers } = require('./controllers/users-controller')
 const app = express()
 
 app.use(express.json())
@@ -22,6 +23,8 @@ app.post('/api/reviews/:review_id/comments', postCommentByReviewId)
 app.patch('/api/reviews/:review_id', setVotes)
 
 app.delete('/api/comments/:comment_id', removeCommentByCommentId)
+
+app.get('/api/users', getUsers)
 
 app.use((req, res, next) => {
     res.status(404).send({ msg: 'Not found' });

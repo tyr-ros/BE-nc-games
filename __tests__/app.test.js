@@ -500,3 +500,43 @@ describe('DELETE: /api/comments/:comment_id', () => {
 
     })
 })
+
+describe('GET: /api/users', () => {
+    it('responds with correct status code 200', () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+    })
+    it('gives an array of objects with the following properties', () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then((res) => {
+                const body = res.body.users
+                expect(body).toBeInstanceOf(Array)
+                const usersProperties = {
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                };
+                body.forEach(user => {
+                    expect(user).toMatchObject(usersProperties);
+                });
+
+
+            })
+    })
+    describe("errors for users", () => {
+        it("returns a 404 if given a bad route", () => {
+            return request(app)
+                .get('/api/userss')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Not found')
+
+
+                })
+        })
+
+    })
+})
