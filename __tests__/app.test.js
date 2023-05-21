@@ -276,11 +276,12 @@ describe('POST: /api/reviews/:review_id/comments', () => {
             body: 'On the other hand, my turtle hated this game'
         }
         return request(app)
-        
+
             .post('/api/reviews/2/comments')
             .send(newComment)
-            .then((res) => {const body = res.body.comment
-                
+            .then((res) => {
+                const body = res.body.comment
+
                 expect(body).toBeInstanceOf(Object)
                 const commentProperties = {
                     comment_id: expect.any(Number),
@@ -290,10 +291,10 @@ describe('POST: /api/reviews/:review_id/comments', () => {
                     author: expect.any(String),
                     created_at: expect.any(String)
                 }
-                
-                    expect(body).toMatchObject(commentProperties);
-                
-                
+
+                expect(body).toMatchObject(commentProperties);
+
+
             })
     })
     describe("errors for posting comments api", () => {
@@ -347,5 +348,19 @@ describe('POST: /api/reviews/:review_id/comments', () => {
                 })
         })
 
+    })
+})
+
+describe('PATCH: /api/reviews/:review_id', () => {
+    it('responds with a 200 response code', () => {
+        const votes = { inc_votes: 1 }
+        return request(app)
+            .patch('/api/reviews/2')
+            .send(votes)
+            .expect(200)
+            .then((res) => {
+                const votes = res.body.reviews.votes
+                expect(votes).toEqual(6)
+            })
     })
 })

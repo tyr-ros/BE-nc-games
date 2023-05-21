@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const { checkReviewIdExists } = require('../db/seeds/utils')
 
 exports.fetchReviewById = (review_id) => {
     return db
@@ -32,5 +33,25 @@ exports.fetchReviews = () => {
                 return Promise.reject({ status: 404 })
             }
             return result.rows
+        })
+}
+
+exports.changeVotes = (voteObject, review_id) => {
+
+    const votes = voteObject.inc_votes
+    const queryStr =
+        `UPDATE reviews
+        SET votes = votes + $1
+        WHERE review_id = $2
+        RETURNING *; `
+    const queryVals = [votes, review_id]
+    return checkReviewIdExists(review_id)
+        .then(() => {
+            return db.query(queryStr, queryVals)
+
+        })
+        .then((res) => {
+            
+            return res.rows[0]
         })
 }
