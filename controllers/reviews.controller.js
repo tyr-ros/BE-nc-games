@@ -27,8 +27,7 @@ exports.setVotes = (req, res, next) => {
     const { review_id } = req.params
     changeVotes(req.body, review_id)
         .then((reviews) => {
-            
-            res.status(200).send({ 'reviews': reviews })
+            res.status(201).send({ 'reviews': reviews })
         })
         .catch((err) => {
             next(err)

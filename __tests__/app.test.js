@@ -323,7 +323,7 @@ describe('POST: /api/reviews/:review_id/comments', () => {
                 body: 'Wrong',
             }
             return request(app)
-                .post('/api/reviews/cat/comments')
+                .post('/api/reviews/2/comments')
                 .send(malformedData)
                 .expect(400)
                 .then(({ body }) => {
@@ -352,15 +352,113 @@ describe('POST: /api/reviews/:review_id/comments', () => {
 })
 
 describe('PATCH: /api/reviews/:review_id', () => {
-    it('responds with a 200 response code', () => {
+    it('responds with a 201 response code', () => {
         const votes = { inc_votes: 1 }
         return request(app)
             .patch('/api/reviews/2')
             .send(votes)
-            .expect(200)
+            .expect(201)
             .then((res) => {
                 const votes = res.body.reviews.votes
                 expect(votes).toEqual(6)
             })
+    })
+    it('gives the correct change in votes back for incrementing', () => {
+        const votes = { inc_votes: 5 }
+        return request(app)
+            .patch('/api/reviews/2')
+            .send(votes)
+            .expect(201)
+            .then((res) => {
+                const votes = res.body.reviews.votes
+                expect(votes).toEqual(10)
+            })
+    })
+    it('gives the correct change in votes back for decrementing', () => {
+        const votes = { inc_votes: -5 }
+        return request(app)
+            .patch('/api/reviews/2')
+            .send(votes)
+            .expect(201)
+            .then((res) => {
+                const votes = res.body.reviews.votes
+                expect(votes).toEqual(0)
+            })
+    })
+    it('gives an object with the following properties', () => {
+        const votes = { inc_votes: 5 }
+        return request(app)
+
+            .patch('/api/reviews/2')
+            .expect(201)
+            .send(votes)
+            .then((res) => {
+                const body = res.body.reviews
+                expect(body).toBeInstanceOf(Object)
+                reviewsProperties = {
+                    owner: expect.any(String),
+                    title: expect.any(String),
+                    designer: expect.any(String),
+                    review_img_url: expect.any(String),
+                    votes: 10,
+                    category: expect.any(String),
+                    created_at: expect.any(String),
+                    review_id: expect.any(Number)
+                };
+                expect(body).toMatchObject(reviewsProperties);
+
+
+            })
+    })
+    describe("errors for updating votes api", () => {
+        it("returns 404 if there is no review_id", () => {
+            return request(app)
+                .patch('/api/reviews/1099')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Not found')
+
+
+                })
+        })
+        it("returns a 400 if given an invalid id", () => {
+            return request(app)
+                .patch('/api/reviews/cat')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+        it("returns a 400 if given malformed data ", () => {
+            const malformedData = {
+                h:
+                    'k', 9: 'lon'
+            }
+            return request(app)
+                .patch('/api/reviews/2')
+                .send(malformedData)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
+        it("returns a 400 if given incorrect data types ", () => {
+            const wrongTypes = {
+                inc_votes: 'lion'
+            }
+            return request(app)
+                .patch('/api/reviews/2')
+                .send(wrongTypes)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+
+                })
+        })
     })
 })
