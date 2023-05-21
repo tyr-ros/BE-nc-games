@@ -462,3 +462,41 @@ describe('PATCH: /api/reviews/:review_id', () => {
         })
     })
 })
+
+describe('DELETE: /api/comments/:comment_id', () => {
+    it('responds with a 200 response code', () => {
+
+        return request(app)
+            .delete('/api/comments/2')
+            .expect(200)
+            .then((res) => {
+                const deleted_id = res.body.deleted.rows[0].comment_id
+                rowsDeleted = res.body.deleted.rowCount;
+                expect(deleted_id).toEqual(2)
+                expect(rowsDeleted).toEqual(1)
+
+            })
+    })
+    describe("errors for deleting a comment", () => {
+        it("returns 404 if there is no comment_id", () => {
+            return request(app)
+                .delete('/api/comments/2099')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Not found')
+
+                })
+        })
+        it("returns a 400 if given an invalid id", () => {
+            return request(app)
+                .delete('/api/comments/lion')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+
+                })
+        })
+
+
+    })
+})

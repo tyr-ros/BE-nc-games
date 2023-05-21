@@ -1,5 +1,5 @@
 const db = require('../db/connection')
-const { checkReviewIdExists } = require("../db/seeds/utils.js");
+const { checkReviewIdExists, checkCommentIdExists } = require("../db/seeds/utils.js");
 
 exports.fetchCommentsByReviewId = (review_id) => {
   return checkReviewIdExists(review_id)
@@ -31,3 +31,22 @@ exports.insertCommentByReviewId = (comment, review_id) => {
       return res.rows[0]
     })
 }
+
+exports.deleteCommentById = (comment_id) => {
+  
+  const queryStr =
+    `DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING comment_id;`
+  const queryVal = [comment_id]
+  
+  return checkCommentIdExists(comment_id)
+    .then(() => {
+      return db.query(queryStr, queryVal)
+    })
+    .then((res) => {
+      
+      return res
+    })
+}
+
