@@ -5,7 +5,8 @@ const { getReviewById, getReviews, setVotes } = require('./controllers/reviews.c
 const { getCommentsByReviewId, postCommentByReviewId, removeCommentByCommentId } = require('./controllers/comments-controllers.js')
 const { getUsers } = require('./controllers/users-controller')
 const app = express()
-
+const cors = require('cors')
+app.use(cors())
 app.use(express.json())
 
 app.get('/api', getEndpoints)
